@@ -12,7 +12,6 @@ public class SimpleDigitalClockRenderer implements IClockRenderer {
   private static final String TIME_FORMAT = "HH:mm:ss";
   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT + " " + TIME_FORMAT + " ");
   private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_FORMAT + " ");
-//  private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT + " ");
 
   private final RenderConfig config;
   private String lastOutput;

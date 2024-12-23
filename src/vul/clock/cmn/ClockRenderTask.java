@@ -14,6 +14,5 @@ public class ClockRenderTask extends TimerTask {
   @Override
   public void run() {
     cr.render(LocalDateTime.now());
-//    System.out.printf("date millis: %d\n", java.util.Calendar.getInstance().get(Calendar.MILLISECOND));
   }
 }

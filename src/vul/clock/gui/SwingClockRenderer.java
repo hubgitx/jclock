@@ -38,8 +38,6 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
   
   private JPopupMenu popupMenu;
   
-//  private ComponentListener bareStyleComponentListener;
-
   private String lastTime;
   private int lastSecondsOfDay = -1;
   private AtomicBoolean renderVeto = new AtomicBoolean(false); 
@@ -112,18 +110,16 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
       @Override 
       public void componentMoved(ComponentEvent evt) {
         SwingClockRenderer.this.config.setFramePosition(getLocation(null));
-//        System.out.println("moved to " + getLocation());
       }
 
       @Override
       public void componentResized(ComponentEvent evt) {
         SwingClockRenderer.this.config.setFrameSize(getSize(null));
-//        System.out.println("resized to " + getSize());
         applyShape(); // it's necessary to re-apply the shape for the frame
       }
     });
     
-    // finally aplly the shape
+    // finally apply the shape
     applyShape(); 
   }
   
@@ -149,8 +145,6 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
   }
   
   private void moveClockBy(int xOffset, int yOffset) { setLocation(getX() + xOffset, getY() + yOffset); }
-
-//  private void resizeClockBy(int wOffset, int hOffset) { resizeClockTo(getWidth() + wOffset, getHeight() + hOffset); }
   
   private void resizeClockTo(Dimension newSize) { resizeClockTo(newSize.width, newSize.height); }
   
@@ -219,8 +213,6 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
     resetSize(dim);
     
     System.out.printf("%s::preferredSize=%dx%d\n", clockCanvas.getClass().getSimpleName(), clockCanvas.getPreferredSize().width, clockCanvas.getPreferredSize().height);
-    
-//    if (switchToAnalog) setShape(new Ellipse2D.Float(0, 0, dim.width, dim.height));
     
     validate();
         
@@ -295,7 +287,7 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
     }
     
     clockCanvas.setDateTime(dt);
-    /*clockCanvas.*/repaint();
+    repaint();
     
     millis = System.currentTimeMillis() - millis;
     if (millis > maxRefreshMillis) {
@@ -317,8 +309,6 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
     @Override public void mouseMoved(MouseEvent evt) {
       if (isResizePickerArea(evt.getX(), evt.getY()) && !isMaximized()) clockCanvas.showResizeCursor();
       else clockCanvas.resetCursor();
-      
-      /* TODO: show settings menu when in upper right area (or so) */ 
     }
 
     @Override
@@ -343,8 +333,6 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
     
     boolean isMoveMode() { return (dragMode & modeMove) == modeMove; }
 
-//    boolean isResizeMode() { return (dragMode & modeResize) == modeResize; }
-    
     boolean isResizePickerArea(int x, int y) {
       int w = getWidth();
       int h = getHeight();

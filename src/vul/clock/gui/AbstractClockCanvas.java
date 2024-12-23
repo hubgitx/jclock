@@ -51,14 +51,13 @@ abstract class AbstractClockCanvas extends JComponent {
   
    
   Shape getBareStayleShape(int frameWidth, int frameHeight) {
-    return new RoundRectangle2D.Double(0, 0, frameWidth,frameHeight, 20, 20);//frameHeight / 10, frameHeight / 10);
+    return new RoundRectangle2D.Double(0, 0, frameWidth, frameHeight, 20, 20);
   }
 
   
   // https://stackoverflow.com/que stions/46343616/how-can-i-convert-a-char-to-int-in-java
   protected void refreshTimeNumerals() {
     String curTimeString = TIME_FORMATTER.format(dateTime);
-//    String curTimeString = java.time.LocalTime.now().getSecond() % 2 == 0 ? "888888" : "888989";
     for (int i = 0; i < curTimeString.length(); timeNumerals[i] = curTimeString.charAt(i++) - '0');
   }
   
@@ -129,7 +128,6 @@ abstract class AbstractClockCanvas extends JComponent {
     super.paintComponent(g);
     
     if (dateTime == null) {
-//      System.out.println("no date/time");
       return;
     }
     
@@ -139,7 +137,6 @@ abstract class AbstractClockCanvas extends JComponent {
     }
 
     refreshing = true;
-//    System.out.print(".");
     try {
       drawClock((Graphics2D)g);
     } catch (Exception ex) {

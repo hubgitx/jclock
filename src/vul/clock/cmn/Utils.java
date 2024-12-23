@@ -9,7 +9,6 @@ import java.util.function.Function;
 public final class Utils {
   
   public static final class Dates {
-//    private static final boolean DAY_AFTER_MONTH;
     public static final DateTimeFormatter SHORT_DATE_FORMATTER;
     static {
       final int month = 12;

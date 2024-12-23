@@ -33,13 +33,7 @@ public class AnalogClockCanvas extends AbstractClockCanvas {
     
     setPreferredSize(PREF_MIN_SIZE);
   }
-  
-
-//  @Override
-//  Shape getBareStayleShape(int frameWidth, int frameHeight) {
-//    return new Ellipse2D.Double(0, 0, frameWidth,frameHeight);
-//  }
-  
+    
   
   @Override
   protected void drawClock(Graphics2D g) {
@@ -52,7 +46,6 @@ public class AnalogClockCanvas extends AbstractClockCanvas {
     final double horUnit = w * MIN_UNIT / (double)PREF_MIN_SIZE.width;
     final double vertUnit = h * MIN_UNIT / (double)PREF_MIN_SIZE.height;
     unit = (int)Math.round(Math.max(MIN_UNIT, Math.min(horUnit, vertUnit)));
-//    unit = (int)Math.max(MIN_UNIT, Math.round(w / PREF_MIN_SIZE.width));
     halfW = w / 2.0;
     halfH = h / 2.0;
     radiusLength = 0.9 * Math.min(halfW, halfH);
