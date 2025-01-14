@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="jclock" default="jar">
+	<property name="vers-num" value="1.0.0" />
+	<property name="is-snapshot" value="y" />
+	<property name="src-dir" value="${basedir}/src" />
+	<property name="build-dir" value="${basedir}/build" />
+
+	
+	<target name="clean-build-dir">
+		<delete dir="${build-dir}" includes="**/*" quiet="true" includeemptydirs="true" />
+		<mkdir dir="${build-dir}" />
+	</target>
+	
+	
+	<target name="build" depends="clean-build-dir">
+		<javac srcdir="${src-dir}" 
+			     destdir="${build-dir}" 
+			     verbose="false"
+           includeantruntime="false" 
+			     includejavaruntime="false" />
+	</target>
+
+	
+	<target name="jar" depends="build">
+		<condition property="snapshot" value="-SNAPSHOT" else="">
+			<equals arg1="${is-snapshot}" arg2="y" /> 
+		</condition>
+		
+		<property name="jar-file" value="${basedir}/../jclock-${vers-num}${snapshot}.jar" />
+		
+    <jar basedir="${build-dir}" destfile="${jar-file}" manifest="${src-dir}/manifest.mf" />
+  </target>
+	
+	
+  <target name="bup-src">
+    <tstamp>
+    	<format property="now" pattern="yyyyMMdd-HHmmss" />
+    </tstamp>
+
+  	<property name="bup-dir" value="${basedir}/.." />
+  	<property name="zip-file" value="${bup-dir}/jclock-src-${vers-num}-${now}.zip" />
+  	
+  	<zip destfile="${zip-file}">
+  		<fileset dir="${basedir}" >
+  			<include name="src/**/*" />
+  			<include name="build.xml" />
+  		</fileset>
+  	</zip>
+  
+  	<echo message="sources stored in '${zip-file}'" />
+
+  </target>
+
+</project>
