@@ -2,7 +2,7 @@
 
 <project name="jclock" default="jar">
 	<property name="vers-num" value="1.0.0" />
-	<property name="is-snapshot" value="y" />
+	<property name="is-snapshot" value="n" />
 	<property name="src-dir" value="${basedir}/src" />
 	<property name="build-dir" value="${basedir}/build" />
 
