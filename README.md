@@ -1,4 +1,7 @@
 # JClock
+
+![JClock](jclock.png?raw=true)
+
 A configurable and flexible xclock clone written in Java.
 
 - compile by going to the 'src' directory and execute
