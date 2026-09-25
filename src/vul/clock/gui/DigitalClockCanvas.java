@@ -12,7 +12,7 @@ import vul.clock.cmn.Utils;
 class DigitalClockCanvas extends AbstractClockCanvas {
   private static final long serialVersionUID = 1L;
   
-  private static final int MIN_UNIT = 3;
+  private static final int MIN_UNIT = 1;
   private static final int MARGIN_UNITS = 3;
   private static final int BAR_WIDTH_UNITS = 1;
   private static final int BAR_LENGTH_UNITS = 6;
@@ -36,7 +36,14 @@ class DigitalClockCanvas extends AbstractClockCanvas {
   
   private static final double THETA_90_DEGREES = Math.toRadians(90); // 90°
   
+//  private static final Dimension PREF_MIN_SIZE = new Dimension(
+//    HOR_TIME_UNIT_UNITS * MIN_UNIT * 4 + HOR_COLON_UNITS * MIN_UNIT + MARGIN_UNITS * 4, // without seconds 
+//    VERT_TIME_UNIT_UNITS * MIN_UNIT // without date
+//  );
+  
   private int unit;
+  
+//  private boolean initialPaint = true;
     
   
   DigitalClockCanvas(Supplier<RenderConfig> configSupplier) {
@@ -44,10 +51,7 @@ class DigitalClockCanvas extends AbstractClockCanvas {
     
     int prefW = (MARGIN_UNITS + horizontalClockUnits(true, true) + MARGIN_UNITS) * MIN_UNIT; 
     int prefH = (MARGIN_UNITS + verticalClockUnits(true)+ MARGIN_UNITS) * MIN_UNIT;
-    Dimension prefSize = new Dimension(prefW, prefH);  
-    setPreferredSize(prefSize);
-    
-    System.out.printf("%s::preferredSize=%dx%d\n", getClass().getSimpleName(), prefW, prefH);
+    setMinimumSize(new Dimension(prefW, prefH));        
   }
   
   private int horizontalClockUnits(boolean withSeconds, boolean withDate) {
@@ -61,7 +65,11 @@ class DigitalClockCanvas extends AbstractClockCanvas {
       + HOR_NUMBER_UNITS
       + MARGIN_UNITS
       + HOR_NUMBER_UNITS;
-       
+    
+//    if (initialPaint) {
+//      System.out.println("time units (HH:mm): " + timeUnits);
+//    }
+    
     if (withSeconds) {
       timeUnits += (
         MARGIN_UNITS
@@ -139,7 +147,19 @@ class DigitalClockCanvas extends AbstractClockCanvas {
     
     int xOff = marginWidth + (int)Math.round((w - timeWidth) / 2.0);
     int yOff = marginWidth + (int)Math.round((h - clockHeight) / 2.0);
-        
+    
+//    if (initialPaint) {
+//      System.out.printf("%s::paintComponent\n", getClass().getSimpleName());
+//      System.out.printf(" -> width=%s, height=%s\n", w, h);
+//      System.out.printf(" -> clock width=%s, clock height=%s\n", clockWidth, clockHeight);
+//      System.out.printf(" -> calculated clock width=%s (HH:mm)\n", (2 * marginWidth + 4 * (numeralWidth + marginWidth) + colonWidth));
+//      System.out.printf(" -> clock units: hor=%s, vert=%s\n", horizontalClockUnits, verticalClockUnits);
+//      System.out.printf(" -> calc unit size: hor=%s, vert=%s, used=%s\n", horUnit, vertUnit, unit);
+//      System.out.printf(" -> numeral width=%s, margin width=%s\n", numeralWidth, marginWidth);
+//      System.out.printf(" -> x offset=%s, y offset=%s\n", xOff, yOff);
+//      initialPaint = false;
+//    }
+    
     int transX = 0;
     int transY = 0;
     
@@ -148,6 +168,7 @@ class DigitalClockCanvas extends AbstractClockCanvas {
       g.fillRect(0, 0, w, h);
 //    }     
     
+//    g.setColor(Utils.Colors.deriveColor(config.getForeColor(), 120));
     g.setColor(config.getForeColor());
     int inset = 2; 
     g.translate(inset, inset);

@@ -2,6 +2,7 @@ package vul.clock.gui;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -51,13 +52,15 @@ abstract class AbstractClockCanvas extends JComponent {
   
    
   Shape getBareStayleShape(int frameWidth, int frameHeight) {
-    return new RoundRectangle2D.Double(0, 0, frameWidth, frameHeight, 20, 20);
+    double arch = Math.min(frameWidth, frameHeight) > 100 ? 20 : 10;
+    return new RoundRectangle2D.Double(0, 0, frameWidth, frameHeight, arch, arch);
   }
 
   
-  // https://stackoverflow.com/que stions/46343616/how-can-i-convert-a-char-to-int-in-java
+  // https://stackoverflow.com/questions/46343616/how-can-i-convert-a-char-to-int-in-java
   protected void refreshTimeNumerals() {
     String curTimeString = TIME_FORMATTER.format(dateTime);
+//    String curTimeString = java.time.LocalTime.now().getSecond() % 2 == 0 ? "888888" : "888989";
     for (int i = 0; i < curTimeString.length(); timeNumerals[i] = curTimeString.charAt(i++) - '0');
   }
   
@@ -122,12 +125,18 @@ abstract class AbstractClockCanvas extends JComponent {
     repaint();
   }
     
+  @Override
+  public void setMinimumSize(Dimension minSize) {
+    System.out.printf("%s::setMinimumSize(%d x %d)\n", getClass().getSimpleName(), minSize.width, minSize.height);
+    super.setMinimumSize(minSize);
+  }
   
   @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
     
     if (dateTime == null) {
+//      System.out.println("no date/time");
       return;
     }
     
@@ -137,6 +146,7 @@ abstract class AbstractClockCanvas extends JComponent {
     }
 
     refreshing = true;
+//    System.out.print(".");
     try {
       drawClock((Graphics2D)g);
     } catch (Exception ex) {

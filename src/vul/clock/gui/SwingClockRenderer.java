@@ -38,6 +38,8 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
   
   private JPopupMenu popupMenu;
   
+//  private ComponentListener bareStyleComponentListener;
+
   private String lastTime;
   private int lastSecondsOfDay = -1;
   private AtomicBoolean renderVeto = new AtomicBoolean(false); 
@@ -63,17 +65,12 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
 
     setUndecorated(true);      
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setSize(config.getFrameSize());
     
-    pack();
     setVisible(true);
     
     // seems this has to be AFTER the setVisible() and/or pack() calls:
     updateMinSize();   
-
-    if (config.getFramePosition() != null) setLocation(config.getFramePosition());
-    else setLocationRelativeTo(null);
-    
-    if (config.getFrameSize() != null) resizeClockTo(config.getFrameSize());
 
     createPopupMenu();
     // note: clockCanvas.setComponentPopupMenu(popupMenu) does currently not play with the mouse handler
@@ -110,21 +107,42 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
       @Override 
       public void componentMoved(ComponentEvent evt) {
         SwingClockRenderer.this.config.setFramePosition(getLocation(null));
+        System.out.println("moved to " + getLocation());
       }
 
       @Override
       public void componentResized(ComponentEvent evt) {
         SwingClockRenderer.this.config.setFrameSize(getSize(null));
-        applyShape(); // it's necessary to re-apply the shape for the frame
+        
+//        // dbg ->
+//        System.out.println(
+//          SwingClockRenderer.this.getClass().getSimpleName() + "::componentResized - resized to " + getSize() + ", event source: " + evt.getSource()
+//          + "\n    -> call stack dump:"
+//        );
+//        StackTraceElement[] steArr = new Exception().getStackTrace();
+//        for (int i = 0; i < steArr.length; i++) System.out.println("        " + steArr[i]);
+//        // <- dbg
+        
+        applyShape(); // it seems to be necessary to re-apply the shape for the frame
       }
     });
+
+//    pack(); // necessary?
     
-    // finally apply the shape
+    // finally aplly the shape
     applyShape(); 
+    
+    SwingUtilities.invokeLater(() -> {
+      if (config.getFramePosition() != null) setLocation(config.getFramePosition());
+      else setLocationRelativeTo(null);
+    
+      if (config.getFrameSize() != null) resizeClockTo(config.getFrameSize());
+    });
   }
   
   private void applyShape() {
-      setShape(clockCanvas.getBareStayleShape(getWidth(), getHeight()));
+//    System.out.println(getClass().getSimpleName() + "::applyShape");
+    setShape(clockCanvas.getBareStayleShape(getWidth(), getHeight()));
   }
   
   private void saveConfig() {
@@ -144,15 +162,67 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
     // <-
   }
   
-  private void moveClockBy(int xOffset, int yOffset) { setLocation(getX() + xOffset, getY() + yOffset); }
+  private void resizeClockTo(Dimension newSize) { resizeTo(newSize.width, newSize.height); }
   
-  private void resizeClockTo(Dimension newSize) { resizeClockTo(newSize.width, newSize.height); }
-  
-  private void resizeClockTo(int newW, int newH) {
+  private void resizeTo(int newW, int newH) {
     renderVeto.compareAndSet(false, true);
+//    System.out.println(getClass().getSimpleName() + "::resizeClockTo(" + newW + ", " + newH + ")...");
     setSize(newW, newH); 
     renderVeto.compareAndSet(true, false);
   }
+  
+//  ///////////
+//  // DEBUG ->
+//  @Override
+//  public void setShape(Shape shape) {
+//    System.out.println(getClass().getSimpleName() + "::setShape(" + shape + "[" + shape.getBounds() + "])");
+//    super.setShape(shape);
+//  } 
+//  
+//  @Override
+//  public void setSize(int w, int h) {
+//    System.out.println(getClass().getSimpleName() + "::setSize(" + w + ", " + h + ')');
+//    if (w != config.getFrameSize().width || h != config.getFrameSize().height) {
+//      System.out.println("   -> call stack dump:");
+//      StackTraceElement[] steArr = new Exception().getStackTrace();
+//      for (int i = 0; i < steArr.length; i++) System.out.println("        " + steArr[i]);
+//    }
+//    
+//    super.setSize(w, h);
+//  }
+//
+//  @Override
+//  public void setSize(Dimension d) {
+//    System.out.println(getClass().getSimpleName() + "::setSize(" + d + ')');
+//    super.setSize(d);
+//  }
+//  
+//  // shouldn't play a role here (as this one is a top-level JFrame)
+//  @Override
+//  public void setPreferredSize(Dimension d) {
+//    System.out.println(getClass().getSimpleName() + "::setPreferredSize(" + d + ')');
+//    super.setPreferredSize(d);
+//  }
+//  
+//  @Override
+//  public void setBounds(int x, int y, int width, int height) {
+//    System.out.printf("%s::setBounds(%d, %d, %d, %d)\n", getClass().getSimpleName(), x, y, width, height);
+//    super.setBounds(x, y, width, height);
+//  }
+//
+//  @Override
+//  public void setBounds(Rectangle r) {
+//    System.out.printf("%s::setBounds(%s)\n", getClass().getSimpleName(), r);
+//    super.setBounds(r);
+//  }
+//
+//  @Override
+//  public void pack() {
+//    System.out.println(getClass().getSimpleName() + "::pack()");
+//    super.pack();
+//  }
+//  // <- DEBUG
+//  ///////////
    
   private synchronized void toggleOpacity() {
     renderVeto.compareAndSet(false, true);
@@ -181,7 +251,7 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
   
    
   private void updateMinSize() {
-    Dimension innerSize = clockCanvas.getPreferredSize();
+    Dimension innerSize = clockCanvas.getMinimumSize();
 //    Insets innerInsets = clockCanvas.getInsets(); // no insets
     Insets frameInsets = getInsets();
 //    System.out.printf("inner size: %d x %d, inner insets: hor=%d, vert=%d, frame insets: hor=%d, vert=%d\n", 
@@ -213,6 +283,8 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
     resetSize(dim);
     
     System.out.printf("%s::preferredSize=%dx%d\n", clockCanvas.getClass().getSimpleName(), clockCanvas.getPreferredSize().width, clockCanvas.getPreferredSize().height);
+    
+//    if (switchToAnalog) setShape(new Ellipse2D.Float(0, 0, dim.width, dim.height));
     
     validate();
         
@@ -287,7 +359,7 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
     }
     
     clockCanvas.setDateTime(dt);
-    repaint();
+    /*clockCanvas.*/repaint();
     
     millis = System.currentTimeMillis() - millis;
     if (millis > maxRefreshMillis) {
@@ -299,27 +371,32 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
   
   
   private final class MouseHandler extends MouseMotionAdapter implements MouseListener {
-    private final int modeNone = 0;
+    private final int  modeNone = 0;
     private final int modeMove = 1;
     private final int modeResize = 2;
-    private int dragMode = modeNone;   
+    private int dragMode = modeNone;
+    private int startX = 0, startY = 0;
     private int startW = 0, startH = 0;
     private int dragStartX = 0, dragStartY = 0;
 
     @Override public void mouseMoved(MouseEvent evt) {
       if (isResizePickerArea(evt.getX(), evt.getY()) && !isMaximized()) clockCanvas.showResizeCursor();
       else clockCanvas.resetCursor();
+      
+      /* TODO: show settings menu when in upper right area (or so) */ 
     }
 
     @Override
     public void mousePressed(MouseEvent evt) {
       if (SwingUtilities.isLeftMouseButton(evt) && !isMaximized()) {
+        startX = getX();
+        startY = getY();
         startW = getWidth();
         startH = getHeight();
-        dragStartX = evt.getX(); 
-        dragStartY = evt.getY();
+        dragStartX = evt.getXOnScreen(); 
+        dragStartY = evt.getYOnScreen();
         
-        if (isResizePickerArea(dragStartX, dragStartY)) {
+        if (isResizePickerArea(evt.getX(), evt.getY())) {
           dragMode = modeResize;
           clockCanvas.showResizeCursor();
         } else {
@@ -331,9 +408,13 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
       }
     }
     
-    boolean isMoveMode() { return (dragMode & modeMove) == modeMove; }
+    private boolean isMoveMode() { return dragMode == modeMove; }
+    
+//    boolean isMoveMode() { return (dragMode & modeMove) == modeMove; }
 
-    boolean isResizePickerArea(int x, int y) {
+//    boolean isResizeMode() { return (dragMode & modeResize) == modeResize; }
+    
+    private boolean isResizePickerArea(int x, int y) {
       int w = getWidth();
       int h = getHeight();
       return 
@@ -346,11 +427,11 @@ public class SwingClockRenderer extends JFrame implements IClockRenderer {
     @Override 
     public void mouseDragged(MouseEvent evt) {
       if (SwingUtilities.isLeftMouseButton(evt) && dragMode != modeNone) {
-        int xOffset = evt.getX() - dragStartX; 
-        int yOffset = evt.getY() - dragStartY;
+        int xOffset = evt.getXOnScreen() - dragStartX;
+        int yOffset = evt.getYOnScreen() - dragStartY;
         
-        if (isMoveMode()) moveClockBy(xOffset, yOffset);
-        else resizeClockTo(startW + xOffset, startH + yOffset);
+        if (isMoveMode()) setLocation(startX + xOffset, startY + yOffset);
+        else resizeTo(startW + xOffset, startH + yOffset);
       }
     }
     

@@ -1,5 +1,10 @@
 package vul.clock;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.time.LocalDateTime;
 import java.util.Timer;
 
 import vul.clock.cli.SimpleDigitalClockRenderer;
@@ -9,21 +14,10 @@ import vul.clock.cmn.IClockRenderer;
 import vul.clock.cmn.RenderConfig;
 import vul.clock.gui.SwingClockRenderer;
 
-// # compile by going to the 'src' diretory and execute
-// javac -d ../bin vul/clock/Clock.java
-// # create executable JAR by jumping to the 'bin' directory (created by the compile step) and execute:
-//
-// jar -cvfm <target path>/jclock-<version>.jar manifest.mf vul
-// # e.g.:
-// jar -cvfm ../../jclock-1.0.0.jar manifest.mf vul
-//
-// # backup sources to ZIP by running the following commnd from within the 'src' directory:
-// jar -cvfM <target path>/jclock-<version>-<date>.zip manifest.mf vul
-// # e.g.:
-// jar -cvfM ../../jclock-1.0.0-SNAPSHOT-src-20241210.zip manifest.mf vul
 final class Clock {
   public static final String TITLE = "JClock";
-  public static final String VERSION = TITLE + " - 2024/12/11";
+  public static final String VERSION_NUMBER = "1.1.0";
+  public static final String VERSION = TITLE + " " + VERSION_NUMBER + " - 2026/09/25";
 
   
   public static void main(String[] args) {
@@ -35,6 +29,18 @@ final class Clock {
       Runtime.getRuntime().exit(0);
     }
 
+    if (argsObj.debugging()) {
+      try {
+        System.setOut(new PrintStream(new FileOutputStream(new File(RenderConfig.CONFIG_DIR, "clock.log"), true), true));
+        System.setErr(System.out);
+      } catch (IOException ex) {
+        ex.printStackTrace();
+      }
+    }
+    
+    System.out.println("----------------------------------------------------------------------------\n");
+    System.out.println("JClock start-up - " + LocalDateTime.now());
+    
     IClockRenderer cr = initRenderer(argsObj);
     // create the fixed-rate time for refreshing the clock UI every second: 
     long millisOffset = (System.currentTimeMillis() % 1000); // current milliseconds part 
@@ -51,6 +57,11 @@ final class Clock {
     } else {
       config = args.asConfig();
     }
+    
+    System.out.println(
+      Clock.class.getSimpleName() + "::initRenderer - effective settings after processing stored config and provided arguments:\n"
+      + "    -> " + config
+    );
     
     return config.isWinMode() 
         ? new SwingClockRenderer(TITLE, config) 

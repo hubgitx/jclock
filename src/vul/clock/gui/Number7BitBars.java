@@ -37,6 +37,7 @@ public enum Number7BitBars {
   }
   
   public static Number7BitBars byIndex(int i) {
+//    System.out.println("DigitalClockBar byIndex(" + i + ")");
     return Arrays.stream(values()).filter((v) -> v.ordinal() == i).findFirst().orElseThrow(() -> new IllegalArgumentException("invalid ordinal index: " + i));
   }
 }

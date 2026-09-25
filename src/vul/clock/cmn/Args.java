@@ -8,15 +8,17 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 public class Args {
+  private static final Arg<Void> DBG = new Arg<>("Debug", 'D', null, "logs STDOUT/STDERR messages to file", (c, v) -> {});
   private static final Arg<Void> HELP = new Arg<>("help", 'h', null, "print this help information to STDOUT and exit", (c, v) -> {});
   private static final BooleanArg WIN_MODE = new BooleanArg("window-mode", 'w', false, "render in a GUI (default is CLI)", (c, v) -> c.setWinMode(v));
+//  private static final BooleanArg BARE_STYLE = new BooleanArg("bare-style", 'b', false, "render without frame decorations as title and borders and stuff (only for 'win-mode')", (c, v) -> c.setBareStyle(v));
   private static final BooleanArg ANALOG = new BooleanArg("analog", 'a', false, "render as an analog clock (default is digital)", (c, v) -> c.setAnalog(v));
   private static final BooleanArg SHOW_DATE = new BooleanArg("show-date", 'd', false, "also render the current date (default is only time)", (c, v) -> c.setShowDate(v));
   
-  private static final Arg<?>[] ALL_ARGS = { HELP, WIN_MODE, /*BARE_STYLE,*/ ANALOG, SHOW_DATE };
+  private static final Arg<?>[] ALL_ARGS = { HELP, WIN_MODE, /*BARE_STYLE,*/ ANALOG, SHOW_DATE, DBG };
   private static final BooleanArg[] APP_ARGS = { WIN_MODE, /*BARE_STYLE,*/ ANALOG, SHOW_DATE };
   
-  private final Set<String> argsSet; 
+  private final Set<String> argsSet;
   
   
   public Args(String[] args) {
@@ -25,9 +27,21 @@ public class Args {
   }
     
   public boolean helpRequested() { return HELP.findIn(argsSet); }
+  
+  public boolean debugging() { return DBG.findIn(argsSet); }
     
   public void printHelp(PrintStream ps) {
-    for (Arg<?> arg : ALL_ARGS) ps.printf("--%s -%s ... %s\n", arg.longName, arg.shortName, arg.description);
+    final int maxArgNamesLength = 16; // -> "--window-mode -w"
+    for (Arg<?> arg : ALL_ARGS) {
+      String argNames = String.format("--%s -%s", arg.longName, arg.shortName);
+      String sep ="...";
+      if (maxArgNamesLength > argNames.length()) {
+        char[] sepArr = new char[maxArgNamesLength - argNames.length()];
+        Arrays.fill(sepArr, '.');
+        sep += new String(sepArr);
+      }
+      ps.printf("%s %s %s\n", argNames, sep, arg.description);
+    }
   }
     
   public RenderConfig asConfig() {

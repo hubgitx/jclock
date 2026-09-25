@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.time.LocalDate;
@@ -17,7 +18,7 @@ public class AnalogClockCanvas extends AbstractClockCanvas {
   
   private static final int MIN_UNIT = 1;
   
-  private static final Dimension PREF_MIN_SIZE = new Dimension(220, 220);
+  private static final Dimension PREF_MIN_SIZE = new Dimension(150, 150);// new Dimension(220, 220);
   
   private int w;
   private int h;
@@ -31,9 +32,15 @@ public class AnalogClockCanvas extends AbstractClockCanvas {
   AnalogClockCanvas(Supplier<RenderConfig> configSupplier) {
     super(configSupplier);
     
-    setPreferredSize(PREF_MIN_SIZE);
+    setMinimumSize(PREF_MIN_SIZE);
   }
-    
+  
+
+//  @Override
+//  Shape getBareStayleShape(int frameWidth, int frameHeight) {
+//    return new Ellipse2D.Double(0, 0, frameWidth,frameHeight);
+//  }
+  
   
   @Override
   protected void drawClock(Graphics2D g) {
@@ -46,6 +53,7 @@ public class AnalogClockCanvas extends AbstractClockCanvas {
     final double horUnit = w * MIN_UNIT / (double)PREF_MIN_SIZE.width;
     final double vertUnit = h * MIN_UNIT / (double)PREF_MIN_SIZE.height;
     unit = (int)Math.round(Math.max(MIN_UNIT, Math.min(horUnit, vertUnit)));
+//    unit = (int)Math.max(MIN_UNIT, Math.round(w / PREF_MIN_SIZE.width));
     halfW = w / 2.0;
     halfH = h / 2.0;
     radiusLength = 0.9 * Math.min(halfW, halfH);
@@ -191,4 +199,48 @@ public class AnalogClockCanvas extends AbstractClockCanvas {
     
     g.setStroke(origStroke);
   }
+  
+  
+  ///////////
+  // DEBUG ->
+  /*
+  @Override
+  public void setSize(int w, int h) {
+    System.out.println(getClass().getSimpleName() + "::setSize(" + w + ", " + h + ')');
+    super.setSize(w, h);
+  }
+  
+  @Override
+  public void setSize(Dimension d) {
+    System.out.println(getClass().getSimpleName() + "::setSize(" + d + ')');
+    super.setSize(d);
+  }
+  
+  @Override
+  public void setPreferredSize(Dimension d) {
+    System.out.println(getClass().getSimpleName() + "::setPreferredSize(" + d + ')');
+    super.setPreferredSize(d);
+  }
+  
+  @Override
+  public void setMinimumSize(Dimension d) {
+    System.out.println(getClass().getSimpleName() + "::setMinimumSize(" + d + ')');
+    super.setMinimumSize(d);
+  }
+  
+  @Override
+  public void setBounds(int x, int y, int width, int height) {
+    System.out.printf("%s::setBounds(%d, %d, %d, %d)\n", getClass().getSimpleName(), x, y, width, height);
+    super.setBounds(x, y, width, height);
+  }
+
+  @Override
+  public void setBounds(Rectangle r) {
+    System.out.printf("%s::setBounds(%s)\n", getClass().getSimpleName(), r);
+    super.setBounds(r);
+  }
+  */
+  // <- DEBUG
+  ///////////
+
 }

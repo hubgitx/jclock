@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class RenderConfig implements Serializable {
   private static final long serialVersionUID = 1L;
   
-  private static final File CONFIG_DIR = new File(System.getProperty("user.home"), ".jclock");
+  public static final File CONFIG_DIR = new File(System.getProperty("user.home"), ".jclock");
   private static final File CONFIG_FILE = new File(CONFIG_DIR, "config.xml");
 
   public static final Color DFLT_BACK_COLOR = new Color(100, 122, 186);
@@ -81,11 +81,14 @@ public class RenderConfig implements Serializable {
       return null;
     }
     
+    System.out.println("processing config settings from " + CONFIG_FILE.getAbsolutePath() + "...");
     try (XMLDecoder dec = new XMLDecoder(new BufferedInputStream(new FileInputStream(CONFIG_FILE)))) {
       return (RenderConfig)dec.readObject();
     } catch (Exception ex) {
       ex.printStackTrace();
       return null;
+    } finally {
+      System.out.println("...processing config settings done");
     }
   }
   
@@ -98,5 +101,19 @@ public class RenderConfig implements Serializable {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
+  }
+  
+  @Override
+  public String toString() {
+    return new StringBuilder(getClass().getName())
+        .append("=( ")
+        .append("analog=").append(analog)
+        .append(", showDate=").append(showDate)
+        .append(", frameSize=").append(frameSize)
+        .append(", framePosition=").append(framePosition)
+        .append(", foreColor=").append(foreColor)
+        .append(", backColor=").append(backColor)
+        .append(" )")
+        .toString();
   }
 }
